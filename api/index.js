@@ -1,23 +1,23 @@
 const express = require('express')
+const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
 
-// Create express instance
+const authRoutes = require('./routes/auth.routes')
+const keys = require('./keys')
 const app = express()
 
-// Require API routes
-const users = require('./routes/users')
-const test = require('./routes/test')
+mongoose.connect(keys.MONGO_URI)
+  .then(() => {
+    console.log('MongoDB connected')
+  })
+  .catch(error => {
+    console.log('MONGODB IS NOT CONNECTING')
+  })
 
-// Import API Routes
-app.use(users)
-app.use(test)
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
 
-// Export express app
+app.use('/api/auth', authRoutes)
+
 module.exports = app
 
-// Start standalone server if directly running
-if (require.main === module) {
-  const port = process.env.PORT || 3001
-  app.listen(port, () => {
-    console.log(`API server listening on port ${port}`)
-  })
-}
